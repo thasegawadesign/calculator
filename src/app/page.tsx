@@ -109,8 +109,9 @@ export default function Home() {
             <button
               key={item.name}
               className={clsx(
-                "grid aspect-square place-items-center rounded-full text-4xl text-white",
+                "grid place-items-center rounded-full text-4xl text-white",
                 {
+                  "aspect-square": item.name !== "0",
                   "col-start-1 col-end-3 aspect-[2/1]": item.name === "0",
                 },
                 { "bg-gray-600": item.name !== "=" },
