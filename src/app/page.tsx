@@ -4,11 +4,19 @@ import clsx from "clsx";
 import { JSX, useState } from "react";
 import { BsPlusSlashMinus } from "react-icons/bs";
 
-type ButtonLabel = { name: string; content: string | JSX.Element };
+const expression = ["operand", "operator"] as const;
+type Expression = (typeof expression)[number];
+
+type ButtonLabel = {
+  type: Expression;
+  name: string;
+  content: string | JSX.Element;
+};
 
 const line1: ButtonLabel[] = [
-  { name: "AC", content: "AC" },
+  { type: "operator", name: "AC", content: "AC" },
   {
+    type: "operator",
     name: "plusSlashMinus",
     content: (
       <>
@@ -16,36 +24,60 @@ const line1: ButtonLabel[] = [
       </>
     ),
   },
-  { name: "%", content: "%" },
-  { name: "÷", content: "÷" },
+  { type: "operator", name: "%", content: "%" },
+  { type: "operator", name: "÷", content: "÷" },
 ];
 const line2: ButtonLabel[] = [
-  { name: "7", content: "7" },
-  { name: "8", content: "8" },
-  { name: "9", content: "9" },
-  { name: "×", content: "×" },
+  { type: "operand", name: "7", content: "7" },
+  { type: "operand", name: "8", content: "8" },
+  { type: "operand", name: "9", content: "9" },
+  { type: "operator", name: "×", content: "×" },
 ];
 const line3: ButtonLabel[] = [
-  { name: "4", content: "4" },
-  { name: "5", content: "5" },
-  { name: "6", content: "6" },
-  { name: "-", content: "-" },
+  { type: "operand", name: "4", content: "4" },
+  { type: "operand", name: "5", content: "5" },
+  { type: "operand", name: "6", content: "6" },
+  { type: "operator", name: "-", content: "-" },
 ];
 const line4: ButtonLabel[] = [
-  { name: "1", content: "1" },
-  { name: "2", content: "2" },
-  { name: "3", content: "3" },
-  { name: "+", content: "+" },
+  { type: "operand", name: "1", content: "1" },
+  { type: "operand", name: "2", content: "2" },
+  { type: "operand", name: "3", content: "3" },
+  { type: "operator", name: "+", content: "+" },
 ];
 const line5: ButtonLabel[] = [
-  { name: "0", content: "0" },
-  { name: ".", content: "." },
-  { name: "=", content: "=" },
+  { type: "operand", name: "0", content: "0" },
+  { type: "operand", name: ".", content: "." },
+  { type: "operator", name: "=", content: "=" },
 ];
 
 export default function Home() {
   const [input, setInput] = useState("");
   const [result, setResult] = useState("");
+
+  const handleClick = (item: ButtonLabel) => {
+    console.log(item);
+    switch (item.name) {
+      case "AC":
+        clearInput();
+        break;
+    }
+    switch (item.type) {
+      case "operand":
+        concatenateNumericLiterals(item.name);
+        break;
+    }
+  };
+
+  const clearInput = () => {
+    setInput("");
+    setResult("");
+  };
+
+  const concatenateNumericLiterals = (value: string) => {
+    if (input.length === 0 && value === "0") return;
+    setInput((prev) => prev + value);
+  };
 
   return (
     <main
@@ -65,6 +97,7 @@ export default function Home() {
                 { "bg-gray-400 active:bg-gray-300": item.name !== "÷" },
                 { "bg-orange-400 active:bg-orange-300": item.name === "÷" },
               )}
+              onClick={() => handleClick(item)}
             >
               {item.content}
             </button>
@@ -77,6 +110,7 @@ export default function Home() {
                 { "bg-gray-600 active:bg-gray-500": item.name !== "×" },
                 { "bg-orange-400 active:bg-orange-300": item.name === "×" },
               )}
+              onClick={() => handleClick(item)}
             >
               {item.content}
             </button>
@@ -89,6 +123,7 @@ export default function Home() {
                 { "bg-gray-600 active:bg-gray-500": item.name !== "-" },
                 { "bg-orange-400 active:bg-orange-300": item.name === "-" },
               )}
+              onClick={() => handleClick(item)}
             >
               {item.content}
             </button>
@@ -101,6 +136,7 @@ export default function Home() {
                 { "bg-gray-600 active:bg-gray-500": item.name !== "+" },
                 { "bg-orange-400 active:bg-orange-300": item.name === "+" },
               )}
+              onClick={() => handleClick(item)}
             >
               {item.content}
             </button>
@@ -117,6 +153,7 @@ export default function Home() {
                 { "bg-gray-600 active:bg-gray-500": item.name !== "=" },
                 { "bg-orange-400 active:bg-orange-300": item.name === "=" },
               )}
+              onClick={() => handleClick(item)}
             >
               {item.content}
             </button>
