@@ -62,8 +62,8 @@ export default function Home() {
               key={item.name}
               className={clsx(
                 "grid aspect-square place-items-center rounded-full text-4xl text-white",
-                { "bg-gray-400": item.name !== "÷" },
-                { "bg-orange-400": item.name === "÷" },
+                { "bg-gray-400 active:bg-gray-300": item.name !== "÷" },
+                { "bg-orange-400 active:bg-orange-300": item.name === "÷" },
               )}
             >
               {item.content}
@@ -74,8 +74,8 @@ export default function Home() {
               key={item.name}
               className={clsx(
                 "grid aspect-square place-items-center rounded-full text-4xl text-white",
-                { "bg-gray-600": item.name !== "×" },
-                { "bg-orange-400": item.name === "×" },
+                { "bg-gray-600 active:bg-gray-500": item.name !== "×" },
+                { "bg-orange-400 active:bg-orange-300": item.name === "×" },
               )}
             >
               {item.content}
@@ -86,8 +86,8 @@ export default function Home() {
               key={item.name}
               className={clsx(
                 "grid aspect-square place-items-center rounded-full text-4xl text-white",
-                { "bg-gray-600": item.name !== "-" },
-                { "bg-orange-400": item.name === "-" },
+                { "bg-gray-600 active:bg-gray-500": item.name !== "-" },
+                { "bg-orange-400 active:bg-orange-300": item.name === "-" },
               )}
             >
               {item.content}
@@ -98,8 +98,8 @@ export default function Home() {
               key={item.name}
               className={clsx(
                 "grid aspect-square place-items-center rounded-full text-4xl text-white",
-                { "bg-gray-600": item.name !== "+" },
-                { "bg-orange-400": item.name === "+" },
+                { "bg-gray-600 active:bg-gray-500": item.name !== "+" },
+                { "bg-orange-400 active:bg-orange-300": item.name === "+" },
               )}
             >
               {item.content}
@@ -109,12 +109,13 @@ export default function Home() {
             <button
               key={item.name}
               className={clsx(
-                "grid aspect-square place-items-center rounded-full text-4xl text-white",
+                "grid place-items-center rounded-full text-4xl text-white",
                 {
+                  "aspect-square": item.name !== "0",
                   "col-start-1 col-end-3 aspect-[2/1]": item.name === "0",
                 },
-                { "bg-gray-600": item.name !== "=" },
-                { "bg-orange-400": item.name === "=" },
+                { "bg-gray-600 active:bg-gray-500": item.name !== "=" },
+                { "bg-orange-400 active:bg-orange-300": item.name === "=" },
               )}
             >
               {item.content}
