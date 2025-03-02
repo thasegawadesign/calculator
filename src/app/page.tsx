@@ -67,6 +67,11 @@ export default function Home() {
         concatenateNumericLiterals(item.name);
         break;
     }
+    switch (item.type) {
+      case "operator":
+        concatenateOperator(item.name);
+        break;
+    }
   };
 
   const clearInput = () => {
@@ -80,6 +85,16 @@ export default function Home() {
     if (input.length === 0 && value === ".") {
       value = "0.";
     }
+    setInput((prev) => prev + value);
+  };
+
+  const concatenateOperator = (value: string) => {
+    if (value === "AC") return;
+    if (value === "=") return;
+    if (input.endsWith("+") && value === "+") return;
+    if (input.endsWith("-") && value === "-") return;
+    if (input.endsWith("×") && value === "×") return;
+    if (input.endsWith("÷") && value === "÷") return;
     setInput((prev) => prev + value);
   };
 
