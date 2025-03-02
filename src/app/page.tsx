@@ -1,9 +1,11 @@
 "use client";
 
 import clsx from "clsx";
+import { all, create, MathJsInstance } from "mathjs";
 import { JSX, useState } from "react";
 import { BsPlusSlashMinus } from "react-icons/bs";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const expression = ["operand", "operator"] as const;
 type Expression = (typeof expression)[number];
 
@@ -25,13 +27,13 @@ const line1: ButtonLabel[] = [
     ),
   },
   { type: "operator", name: "%", content: "%" },
-  { type: "operator", name: "÷", content: "÷" },
+  { type: "operator", name: "/", content: "÷" },
 ];
 const line2: ButtonLabel[] = [
   { type: "operand", name: "7", content: "7" },
   { type: "operand", name: "8", content: "8" },
   { type: "operand", name: "9", content: "9" },
-  { type: "operator", name: "×", content: "×" },
+  { type: "operator", name: "*", content: "×" },
 ];
 const line3: ButtonLabel[] = [
   { type: "operand", name: "4", content: "4" },
@@ -54,12 +56,27 @@ const line5: ButtonLabel[] = [
 export default function Home() {
   const [input, setInput] = useState("");
   const [result, setResult] = useState("");
+  const [isCalculated, setIscalculated] = useState(false);
+
+  const math: MathJsInstance = create(all);
+
+  const replaceMathSymbols = (expression: string) => {
+    return expression.replace(/×/g, "*").replace(/÷/g, "/");
+  };
 
   const handleClick = (item: ButtonLabel) => {
     console.log(item);
     switch (item.name) {
       case "AC":
         clearInput();
+        setIscalculated(false);
+        break;
+      case "plusSlashMinus":
+        toggleSign();
+        setIscalculated(false);
+        break;
+      case "=":
+        calculate();
         break;
     }
     switch (item.type) {
@@ -69,7 +86,7 @@ export default function Home() {
     }
     switch (item.type) {
       case "operator":
-        concatenateOperator(item.name);
+        concatenateOperator(item.content);
         break;
     }
   };
@@ -77,6 +94,19 @@ export default function Home() {
   const clearInput = () => {
     setInput("");
     setResult("");
+  };
+
+  const calculate = () => {
+    setResult(math.evaluate(replaceMathSymbols(input)));
+    setIscalculated(true);
+  };
+
+  const toggleDash = (str: string) => {
+    return str.startsWith("-") ? str.slice(1) : `-${str}`;
+  };
+
+  const toggleSign = () => {
+    setInput(toggleDash(input));
   };
 
   const concatenateNumericLiterals = (value: string) => {
@@ -88,13 +118,15 @@ export default function Home() {
     setInput((prev) => prev + value);
   };
 
-  const concatenateOperator = (value: string) => {
+  const concatenateOperator = (value: string | JSX.Element) => {
     if (value === "AC") return;
     if (value === "=") return;
     if (input.endsWith("+") && value === "+") return;
     if (input.endsWith("-") && value === "-") return;
     if (input.endsWith("×") && value === "×") return;
     if (input.endsWith("÷") && value === "÷") return;
+    if (typeof value === "object") return;
+    setIscalculated(false);
     setInput((prev) => prev + value);
   };
 
@@ -104,8 +136,21 @@ export default function Home() {
     >
       <div className={clsx("max-w-sm")}>
         <div className={clsx("pb-5 text-right")}>
-          <p className={clsx("text-7xl text-white")}>{input || "0"}</p>
-          <p className={clsx("text-7xl text-white")}>{result}</p>
+          <p
+            className={clsx("", {
+              "text-7xl text-white": isCalculated !== true,
+              "mb-4 text-3xl text-gray-500": isCalculated === true,
+            })}
+          >
+            {input || "0"}
+          </p>
+          <p
+            className={clsx("text-7xl text-white", {
+              hidden: isCalculated !== true,
+            })}
+          >
+            {result}
+          </p>
         </div>
         <div className={clsx("grid grid-cols-4 gap-2")}>
           {line1.map((item) => (
@@ -113,8 +158,8 @@ export default function Home() {
               key={item.name}
               className={clsx(
                 "grid aspect-square place-items-center rounded-full text-4xl text-white",
-                { "bg-gray-400 active:bg-gray-300": item.name !== "÷" },
-                { "bg-orange-400 active:bg-orange-300": item.name === "÷" },
+                { "bg-gray-400 active:bg-gray-300": item.name !== "/" },
+                { "bg-orange-400 active:bg-orange-300": item.name === "/" },
               )}
               onClick={() => handleClick(item)}
             >
@@ -126,8 +171,8 @@ export default function Home() {
               key={item.name}
               className={clsx(
                 "grid aspect-square place-items-center rounded-full text-4xl text-white",
-                { "bg-gray-600 active:bg-gray-500": item.name !== "×" },
-                { "bg-orange-400 active:bg-orange-300": item.name === "×" },
+                { "bg-gray-600 active:bg-gray-500": item.name !== "*" },
+                { "bg-orange-400 active:bg-orange-300": item.name === "*" },
               )}
               onClick={() => handleClick(item)}
             >
