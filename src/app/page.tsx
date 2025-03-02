@@ -76,6 +76,10 @@ export default function Home() {
 
   const concatenateNumericLiterals = (value: string) => {
     if (input.length === 0 && value === "0") return;
+    if (input.includes(".") && value === ".") return;
+    if (input.length === 0 && value === ".") {
+      value = "0.";
+    }
     setInput((prev) => prev + value);
   };
 
