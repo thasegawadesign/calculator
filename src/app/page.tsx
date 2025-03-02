@@ -65,7 +65,6 @@ export default function Home() {
   };
 
   const handleClick = (item: ButtonLabel) => {
-    console.log(item);
     switch (item.name) {
       case "AC":
         clearInput();
