@@ -105,6 +105,7 @@ export default function Home() {
   };
 
   const toggleSign = () => {
+    if (input === "") return;
     setInput(toggleDash(input));
   };
 
