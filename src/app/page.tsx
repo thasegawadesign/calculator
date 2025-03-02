@@ -71,6 +71,10 @@ export default function Home() {
         clearInput();
         setIscalculated(false);
         break;
+      case "plusSlashMinus":
+        toggleSign();
+        setIscalculated(false);
+        break;
       case "=":
         calculate();
         break;
@@ -95,6 +99,14 @@ export default function Home() {
   const calculate = () => {
     setResult(math.evaluate(replaceMathSymbols(input)));
     setIscalculated(true);
+  };
+
+  const toggleDash = (str: string) => {
+    return str.startsWith("-") ? str.slice(1) : `-${str}`;
+  };
+
+  const toggleSign = () => {
+    setInput(toggleDash(input));
   };
 
   const concatenateNumericLiterals = (value: string) => {
