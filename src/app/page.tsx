@@ -56,7 +56,7 @@ const line5: ButtonLabel[] = [
 export default function Home() {
   const [input, setInput] = useState("");
   const [result, setResult] = useState("");
-  const [isCalculated, setIscalculated] = useState(false);
+  const [isCalculated, setIsCalculated] = useState(false);
 
   const math: MathJsInstance = create(all);
 
@@ -68,11 +68,11 @@ export default function Home() {
     switch (item.name) {
       case "AC":
         clearInput();
-        setIscalculated(false);
+        setIsCalculated(false);
         break;
       case "plusSlashMinus":
         toggleSign();
-        setIscalculated(false);
+        setIsCalculated(false);
         break;
       case "=":
         calculate();
@@ -97,7 +97,7 @@ export default function Home() {
 
   const calculate = () => {
     setResult(math.evaluate(replaceMathSymbols(input)));
-    setIscalculated(true);
+    setIsCalculated(true);
   };
 
   const toggleDash = (str: string) => {
@@ -126,7 +126,7 @@ export default function Home() {
     if (input.endsWith("×") && value === "×") return;
     if (input.endsWith("÷") && value === "÷") return;
     if (typeof value === "object") return;
-    setIscalculated(false);
+    setIsCalculated(false);
     setInput((prev) => prev + value);
   };
 
