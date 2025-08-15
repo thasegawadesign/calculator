@@ -96,11 +96,26 @@ export default function Home() {
   };
 
   const calculate = () => {
+    if (input.trim() === "") {
+      setResult("0");
+      setIsCalculated(true);
+      return;
+    }
+
+    const trimmedInput = input.replace(/[+\-×÷%]+$/, "");
+
+    if (trimmedInput === "") {
+      setResult("0");
+      setIsCalculated(true);
+      return;
+    }
+
     try {
-      const rawResult = math.evaluate(replaceMathSymbols(input));
+      const rawResult = math.evaluate(replaceMathSymbols(trimmedInput));
       const roundedResult = Math.round(rawResult * 1e12) / 1e12;
       setResult(roundedResult.toString());
       setIsCalculated(true);
+      return;
     } catch (error) {
       setResult(error instanceof Error ? error.message : "計算エラー");
       setIsCalculated(true);
