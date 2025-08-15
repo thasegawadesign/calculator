@@ -106,32 +106,70 @@ export default function Home() {
       setIsCalculated(true);
     }
   };
-  const toggleDash = (str: string) => {
-    return str.startsWith("-") ? str.slice(1) : `-${str}`;
-  };
 
   const toggleSign = () => {
     if (input === "") return;
-    setInput(toggleDash(input));
+
+    const currentNumber = getCurrentNumber(input);
+    if (currentNumber === "") return;
+
+    const expressionWithoutLastNumber = getExpressionWithoutLastNumber(input);
+
+    if (currentNumber.startsWith("-")) {
+      const newNumber = currentNumber.slice(1);
+      setInput(expressionWithoutLastNumber + newNumber);
+      return;
+    }
+
+    const newNumber = "-" + currentNumber;
+    setInput(expressionWithoutLastNumber + newNumber);
+  };
+
+  const getCurrentNumber = (expression: string) => {
+    const operators = /([+\-×÷%])/;
+    const parts = expression.split(operators);
+    return parts[parts.length - 1] || "";
+  };
+
+  const getExpressionWithoutLastNumber = (expression: string) => {
+    const currentNumber = getCurrentNumber(expression);
+    if (currentNumber === "") return expression;
+    return expression.slice(0, -currentNumber.length);
   };
 
   const concatenateNumericLiterals = (value: string) => {
     if (input.length === 0 && value === "0") return;
-    if (input.includes(".") && value === ".") return;
+
+    const currentNumber = getCurrentNumber(input);
+    if (currentNumber.includes(".") && value === ".") return;
+
     if (input.length === 0 && value === ".") {
       value = "0.";
     }
+
+    if (value === "." && /[+\-×÷%]$/.test(input)) {
+      value = "0.";
+    }
+
     setInput((prev) => prev + value);
   };
 
   const concatenateOperator = (value: string | JSX.Element) => {
     if (value === "AC") return;
     if (value === "=") return;
+    if (typeof value === "object") return;
+
+    if (input === "" && value !== "-") return;
+
     if (input.endsWith("+") && value === "+") return;
-    if (input.endsWith("-") && value === "-") return;
     if (input.endsWith("×") && value === "×") return;
     if (input.endsWith("÷") && value === "÷") return;
-    if (typeof value === "object") return;
+    if (input.endsWith("%") && value === "%") return;
+
+    if (value === "-") {
+      if (input.endsWith("-")) return;
+    }
+
     setIsCalculated(false);
     setInput((prev) => prev + value);
   };
