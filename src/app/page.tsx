@@ -342,7 +342,7 @@ export default function Home() {
     <main
       className={clsx("grid h-screen w-full items-end bg-gray-800 px-4 pb-20")}
     >
-      <div className={clsx("max-w-[348px]")}>
+      <div className={clsx("w-full max-w-[348px]")}>
         <div className={clsx("pb-5")}>
           <div className="mb-2 w-full max-w-[348px] text-right">
             <div className="relative text-right">
