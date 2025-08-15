@@ -96,10 +96,16 @@ export default function Home() {
   };
 
   const calculate = () => {
-    setResult(math.evaluate(replaceMathSymbols(input)));
-    setIsCalculated(true);
+    try {
+      const rawResult = math.evaluate(replaceMathSymbols(input));
+      const roundedResult = Math.round(rawResult * 1e12) / 1e12;
+      setResult(roundedResult.toString());
+      setIsCalculated(true);
+    } catch (error) {
+      setResult(error instanceof Error ? error.message : "計算エラー");
+      setIsCalculated(true);
+    }
   };
-
   const toggleDash = (str: string) => {
     return str.startsWith("-") ? str.slice(1) : `-${str}`;
   };
