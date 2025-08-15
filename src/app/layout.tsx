@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   title: "JavaScript電卓",
 };
 
+const isProduction = process.env.NODE_ENV === "production";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -19,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className={inter.className}>{children}</body>
-      <GoogleAnalytics gaId="G-GMRX0Y7G20" />
+      {isProduction && <GoogleAnalytics gaId="G-GMRX0Y7G20" />}
     </html>
   );
 }
