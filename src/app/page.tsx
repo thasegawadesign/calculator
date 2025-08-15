@@ -58,6 +58,8 @@ export default function Home() {
   const [result, setResult] = useState("");
   const inputRef = useRef<HTMLParagraphElement>(null);
   const resultRef = useRef<HTMLParagraphElement>(null);
+  const inputScrollRef = useRef<HTMLDivElement>(null);
+  const resultScrollRef = useRef<HTMLDivElement>(null);
   const [isCalculated, setIsCalculated] = useState(false);
 
   const math: MathJsInstance = create(all);
@@ -286,19 +288,37 @@ export default function Home() {
     return "text-4xl";
   };
 
-  useEffect(() => {
-    if (inputRef.current && isLongNumber(formatInputForDisplay(input))) {
-      inputRef.current.scrollLeft = inputRef.current.scrollWidth;
-    }
-  }, [formatInputForDisplay, input]);
-
-  useEffect(() => {
-    if (resultRef.current && isLongNumber(result)) {
-      resultRef.current.scrollLeft = resultRef.current.scrollWidth;
-    }
-  }, [result]);
-
   const displayInput = formatInputForDisplay(input);
+
+  useEffect(() => {
+    const el = inputScrollRef.current;
+    if (!el) return;
+
+    const id = requestAnimationFrame(() => {
+      if (isCalculated) {
+        el.scrollLeft = 0;
+        return;
+      }
+      el.scrollLeft = el.scrollWidth;
+    });
+
+    return () => cancelAnimationFrame(id);
+  }, [displayInput, isCalculated]);
+
+  useEffect(() => {
+    const el = resultScrollRef.current;
+    if (!el) return;
+
+    const id = requestAnimationFrame(() => {
+      if (isCalculated) {
+        el.scrollLeft = 0;
+        return;
+      }
+      el.scrollLeft = el.scrollWidth;
+    });
+
+    return () => cancelAnimationFrame(id);
+  }, [result, isCalculated]);
 
   return (
     <main
@@ -308,6 +328,7 @@ export default function Home() {
         <div className={clsx("pb-5")}>
           <div className="mb-2 w-full max-w-[348px] text-right">
             <div
+              ref={inputScrollRef}
               className={clsx({
                 "scrollbar-none overflow-x-auto": isLongNumber(input || "0"),
                 "overflow-hidden": !isLongNumber(input || "0"),
@@ -330,6 +351,7 @@ export default function Home() {
               })}
             >
               <div
+                ref={resultScrollRef}
                 className={clsx({
                   "scrollbar-none overflow-x-auto": isLongNumber(result),
                   "overflow-hidden": !isLongNumber(result),
