@@ -114,7 +114,8 @@ export default function Home() {
     }
 
     try {
-      const rawResult = math.evaluate(replaceMathSymbols(trimmedInput));
+      const mathExpression = convertParenthesesForMath(trimmedInput);
+      const rawResult = math.evaluate(replaceMathSymbols(mathExpression));
       const formattedResult = formatResult(rawResult);
       setResult(formattedResult);
       setIsCalculated(true);
@@ -126,23 +127,43 @@ export default function Home() {
   };
 
   const toggleSign = () => {
-    if (input === "") return;
+    if (input === "") {
+      setInput("(-0)");
+      return;
+    }
 
     const currentNumber = getCurrentNumber(input);
     if (currentNumber === "") return;
 
+    if (/^[+\-×÷%]+$/.test(currentNumber)) return;
+
     const expressionWithoutLastNumber = getExpressionWithoutLastNumber(input);
 
-    if (currentNumber.startsWith("-")) {
-      const newNumber = currentNumber.slice(1);
-      setInput(expressionWithoutLastNumber + newNumber);
+    if (input.endsWith("(-" + currentNumber)) {
+      setInput(expressionWithoutLastNumber + currentNumber);
       return;
     }
 
-    const newNumber = "-" + currentNumber;
-    setInput(expressionWithoutLastNumber + newNumber);
-  };
+    if (currentNumber.startsWith("(") && currentNumber.endsWith(")")) {
+      const numberInParentheses = currentNumber.slice(1, -1);
+      if (numberInParentheses.startsWith("-")) {
+        const positiveNumber = numberInParentheses.slice(1);
+        setInput(expressionWithoutLastNumber + positiveNumber);
+      } else {
+        setInput(
+          expressionWithoutLastNumber + "(-" + numberInParentheses + ")",
+        );
+      }
+      return;
+    }
 
+    if (currentNumber.startsWith("-")) {
+      const positiveNumber = currentNumber.slice(1);
+      setInput(expressionWithoutLastNumber + positiveNumber);
+    } else {
+      setInput(expressionWithoutLastNumber + "(-" + currentNumber + ")");
+    }
+  };
   const getCurrentNumber = (expression: string) => {
     const patterns = [/\([^)]*\)$/, /[+\-×÷%]([^+\-×÷%]*)$/, /^([^+\-×÷%]*)$/];
 
@@ -162,18 +183,32 @@ export default function Home() {
     return expression.slice(0, -currentNumber.length);
   };
 
+  const convertParenthesesForMath = (expression: string) => {
+    return expression.replace(/\((-?\d*\.?\d*)\)/g, "$1");
+  };
+
   const concatenateNumericLiterals = (value: string) => {
     if (input.length === 0 && value === "0") return;
 
     const currentNumber = getCurrentNumber(input);
 
-    if (currentNumber.includes(".") && value === ".") return;
+    const actualNumber =
+      currentNumber.startsWith("(") && currentNumber.endsWith(")")
+        ? currentNumber.slice(1, -1)
+        : currentNumber;
+
+    if (actualNumber.includes(".") && value === ".") return;
 
     if (input.length === 0 && value === ".") {
       value = "0.";
     }
     if (value === "." && /[+\-×÷%]$/.test(input)) {
       value = "0.";
+    }
+
+    if (input.endsWith("(-")) {
+      setInput((prev) => prev + value + ")");
+      return;
     }
 
     setInput((prev) => prev + value);
