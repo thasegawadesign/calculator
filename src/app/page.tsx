@@ -65,28 +65,31 @@ export default function Home() {
   };
 
   const handleClick = (item: ButtonLabel) => {
-    switch (item.name) {
-      case "AC":
-        clearInput();
-        setIsCalculated(false);
-        break;
-      case "plusSlashMinus":
-        toggleSign();
-        setIsCalculated(false);
-        break;
-      case "=":
-        calculate();
-        break;
+    if (item.name === "AC") {
+      clearInput();
+      setIsCalculated(false);
+      return;
     }
-    switch (item.type) {
-      case "operand":
-        concatenateNumericLiterals(item.name);
-        break;
+
+    if (item.name === "plusSlashMinus") {
+      toggleSign();
+      setIsCalculated(false);
+      return;
     }
-    switch (item.type) {
-      case "operator":
-        concatenateOperator(item.content);
-        break;
+
+    if (item.name === "=") {
+      calculate();
+      return;
+    }
+
+    if (item.type === "operand") {
+      concatenateNumericLiterals(item.name);
+      return;
+    }
+
+    if (item.type === "operator") {
+      concatenateOperator(item.content);
+      return;
     }
   };
 
@@ -96,38 +99,165 @@ export default function Home() {
   };
 
   const calculate = () => {
-    setResult(math.evaluate(replaceMathSymbols(input)));
-    setIsCalculated(true);
-  };
+    if (input.trim() === "") {
+      setResult("0");
+      setIsCalculated(true);
+      return;
+    }
 
-  const toggleDash = (str: string) => {
-    return str.startsWith("-") ? str.slice(1) : `-${str}`;
+    const trimmedInput = input.replace(/[+\-×÷%]+$/, "");
+
+    if (trimmedInput === "") {
+      setResult("0");
+      setIsCalculated(true);
+      return;
+    }
+
+    try {
+      const mathExpression = convertParenthesesForMath(trimmedInput);
+      const rawResult = math.evaluate(replaceMathSymbols(mathExpression));
+      const formattedResult = formatResult(rawResult);
+      setResult(formattedResult);
+      setIsCalculated(true);
+      return;
+    } catch (error) {
+      setResult(error instanceof Error ? error.message : "計算エラー");
+      setIsCalculated(true);
+    }
   };
 
   const toggleSign = () => {
-    if (input === "") return;
-    setInput(toggleDash(input));
+    if (input === "") {
+      setInput("(-0)");
+      return;
+    }
+
+    const currentNumber = getCurrentNumber(input);
+    if (currentNumber === "") return;
+
+    if (/^[+\-×÷%]+$/.test(currentNumber)) return;
+
+    const expressionWithoutLastNumber = getExpressionWithoutLastNumber(input);
+
+    if (input.endsWith("(-" + currentNumber)) {
+      setInput(expressionWithoutLastNumber + currentNumber);
+      return;
+    }
+
+    if (currentNumber.startsWith("(") && currentNumber.endsWith(")")) {
+      const numberInParentheses = currentNumber.slice(1, -1);
+      if (numberInParentheses.startsWith("-")) {
+        const positiveNumber = numberInParentheses.slice(1);
+        setInput(expressionWithoutLastNumber + positiveNumber);
+      } else {
+        setInput(
+          expressionWithoutLastNumber + "(-" + numberInParentheses + ")",
+        );
+      }
+      return;
+    }
+
+    if (currentNumber.startsWith("-")) {
+      const positiveNumber = currentNumber.slice(1);
+      setInput(expressionWithoutLastNumber + positiveNumber);
+    } else {
+      setInput(expressionWithoutLastNumber + "(-" + currentNumber + ")");
+    }
+  };
+  const getCurrentNumber = (expression: string) => {
+    const patterns = [/\([^)]*\)$/, /[+\-×÷%]([^+\-×÷%]*)$/, /^([^+\-×÷%]*)$/];
+
+    for (const pattern of patterns) {
+      const match = expression.match(pattern);
+      if (match) {
+        return match[1] || match[0];
+      }
+    }
+
+    return "";
+  };
+
+  const getExpressionWithoutLastNumber = (expression: string) => {
+    const currentNumber = getCurrentNumber(expression);
+    if (currentNumber === "") return expression;
+    return expression.slice(0, -currentNumber.length);
+  };
+
+  const convertParenthesesForMath = (expression: string) => {
+    return expression.replace(/\((-?\d*\.?\d*)\)/g, "$1");
   };
 
   const concatenateNumericLiterals = (value: string) => {
     if (input.length === 0 && value === "0") return;
-    if (input.includes(".") && value === ".") return;
+
+    const currentNumber = getCurrentNumber(input);
+
+    const actualNumber =
+      currentNumber.startsWith("(") && currentNumber.endsWith(")")
+        ? currentNumber.slice(1, -1)
+        : currentNumber;
+
+    if (actualNumber.includes(".") && value === ".") return;
+
     if (input.length === 0 && value === ".") {
       value = "0.";
     }
+    if (value === "." && /[+\-×÷%]$/.test(input)) {
+      value = "0.";
+    }
+
+    if (input.endsWith("(-")) {
+      setInput((prev) => prev + value + ")");
+      return;
+    }
+
     setInput((prev) => prev + value);
   };
 
   const concatenateOperator = (value: string | JSX.Element) => {
     if (value === "AC") return;
     if (value === "=") return;
+    if (typeof value === "object") return;
+    if (input === "" && value !== "-") return;
     if (input.endsWith("+") && value === "+") return;
     if (input.endsWith("-") && value === "-") return;
     if (input.endsWith("×") && value === "×") return;
     if (input.endsWith("÷") && value === "÷") return;
-    if (typeof value === "object") return;
+    if (input.endsWith("%") && value === "%") return;
+
     setIsCalculated(false);
     setInput((prev) => prev + value);
+  };
+
+  const formatResult = (num: number) => {
+    const str = num.toString();
+
+    if (Number.isInteger(num)) {
+      return str;
+    }
+
+    const precision = 12;
+    let result = num.toPrecision(precision);
+
+    if (result.includes("e")) {
+      if (Math.abs(num) < 1) {
+        result = num.toFixed(12);
+      } else {
+        result = num.toString();
+      }
+    }
+
+    result = result.replace(/\.?0+$/, "");
+
+    return result;
+  };
+  const getFontSizeClass = (value: string) => {
+    const length = value.replace(/[.-]/g, "").length;
+
+    if (length <= 6) return "text-7xl";
+    if (length <= 9) return "text-6xl";
+    if (length <= 12) return "text-5xl";
+    return "text-4xl";
   };
 
   return (
@@ -137,15 +267,15 @@ export default function Home() {
       <div className={clsx("max-w-sm")}>
         <div className={clsx("pb-5 text-right")}>
           <p
-            className={clsx("", {
-              "text-7xl text-white": isCalculated !== true,
+            className={clsx("text-white", {
+              [getFontSizeClass(input || "0")]: isCalculated !== true,
               "mb-4 text-3xl text-gray-500": isCalculated === true,
             })}
           >
             {input || "0"}
           </p>
           <p
-            className={clsx("text-7xl text-white", {
+            className={clsx(`${getFontSizeClass(result)} text-white`, {
               hidden: isCalculated !== true,
             })}
           >
