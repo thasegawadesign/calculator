@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import { all, create, MathJsInstance } from "mathjs";
-import { JSX, useEffect, useRef, useState } from "react";
+import { JSX, useCallback, useEffect, useRef, useState } from "react";
 import { BsPlusSlashMinus } from "react-icons/bs";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -65,6 +65,24 @@ export default function Home() {
   const replaceMathSymbols = (expression: string) => {
     return expression.replace(/×/g, "*").replace(/÷/g, "/");
   };
+
+  const addCommas = (num: string) => {
+    const parts = num.split(".");
+    const integerPart = parts[0];
+    const decimalPart = parts[1];
+
+    const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    return decimalPart
+      ? `${formattedInteger}.${decimalPart}`
+      : formattedInteger;
+  };
+
+  const formatInputForDisplay = useCallback((inputStr: string) => {
+    return inputStr.replace(/(\d+)/g, (match) => {
+      return addCommas(match);
+    });
+  }, []);
 
   const handleClick = (item: ButtonLabel) => {
     if (item.name === "AC") {
@@ -235,7 +253,7 @@ export default function Home() {
     const str = num.toString();
 
     if (Number.isInteger(num)) {
-      return str;
+      return addCommas(str);
     }
 
     const precision = 12;
@@ -251,7 +269,7 @@ export default function Home() {
 
     result = result.replace(/\.?0+$/, "");
 
-    return result;
+    return addCommas(result);
   };
 
   const isLongNumber = (value: string) => {
@@ -269,16 +287,18 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (inputRef.current && isLongNumber(input)) {
+    if (inputRef.current && isLongNumber(formatInputForDisplay(input))) {
       inputRef.current.scrollLeft = inputRef.current.scrollWidth;
     }
-  }, [input]);
+  }, [formatInputForDisplay, input]);
 
   useEffect(() => {
     if (resultRef.current && isLongNumber(result)) {
       resultRef.current.scrollLeft = resultRef.current.scrollWidth;
     }
   }, [result]);
+
+  const displayInput = formatInputForDisplay(input);
 
   return (
     <main
@@ -301,7 +321,7 @@ export default function Home() {
                   "whitespace-nowrap": isLongNumber(input || "0"),
                 })}
               >
-                {input || "0"}
+                {displayInput || "0"}
               </p>
             </div>
             <div
