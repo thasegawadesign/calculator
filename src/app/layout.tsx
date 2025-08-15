@@ -1,3 +1,4 @@
+import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -18,6 +19,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className={inter.className}>{children}</body>
+      <GoogleAnalytics gaId="G-GMRX0Y7G20" />
     </html>
   );
 }
