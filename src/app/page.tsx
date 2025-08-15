@@ -189,6 +189,15 @@ export default function Home() {
     setInput((prev) => prev + value);
   };
 
+  const getFontSizeClass = (value: string) => {
+    const length = value.replace(/[.-]/g, "").length;
+
+    if (length <= 6) return "text-7xl";
+    if (length <= 9) return "text-5xl";
+    if (length <= 12) return "text-4xl";
+    return "text-3xl";
+  };
+
   return (
     <main
       className={clsx("grid h-screen w-full items-end bg-gray-800 px-4 pb-20")}
@@ -196,15 +205,15 @@ export default function Home() {
       <div className={clsx("max-w-sm")}>
         <div className={clsx("pb-5 text-right")}>
           <p
-            className={clsx("", {
-              "text-7xl text-white": isCalculated !== true,
+            className={clsx("text-white", {
+              [getFontSizeClass(input || "0")]: isCalculated !== true,
               "mb-4 text-3xl text-gray-500": isCalculated === true,
             })}
           >
             {input || "0"}
           </p>
           <p
-            className={clsx("text-7xl text-white", {
+            className={clsx(`${getFontSizeClass(result)} text-white`, {
               hidden: isCalculated !== true,
             })}
           >
