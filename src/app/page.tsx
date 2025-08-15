@@ -1,5 +1,6 @@
 "use client";
 
+import { useEdgeFades } from "@/hooks/useEdgeFades";
 import clsx from "clsx";
 import { all, create, MathJsInstance } from "mathjs";
 import { JSX, useCallback, useEffect, useRef, useState } from "react";
@@ -58,8 +59,12 @@ export default function Home() {
   const [result, setResult] = useState("");
   const inputRef = useRef<HTMLParagraphElement>(null);
   const resultRef = useRef<HTMLParagraphElement>(null);
-  const inputScrollRef = useRef<HTMLDivElement>(null);
-  const resultScrollRef = useRef<HTMLDivElement>(null);
+  const inputScrollRef = useRef<HTMLDivElement>(
+    null,
+  ) as React.RefObject<HTMLDivElement>;
+  const resultScrollRef = useRef<HTMLDivElement>(
+    null,
+  ) as React.RefObject<HTMLDivElement>;
   const [isCalculated, setIsCalculated] = useState(false);
 
   const math: MathJsInstance = create(all);
@@ -279,6 +284,21 @@ export default function Home() {
     return digitsOnly.length > 12;
   };
 
+  const inputOverflow = isLongNumber(input || "0");
+  const resultOverflow = isLongNumber(result);
+
+  const displayInput = formatInputForDisplay(input);
+
+  const { showLeft: showInputLeft, showRight: showInputRight } = useEdgeFades(
+    inputScrollRef,
+    inputOverflow,
+  );
+
+  const { showLeft: showResultLeft, showRight: showResultRight } = useEdgeFades(
+    resultScrollRef,
+    resultOverflow,
+  );
+
   const getFontSizeClass = (value: string) => {
     const length = value.replace(/[.-]/g, "").length;
 
@@ -287,8 +307,6 @@ export default function Home() {
     if (length <= 12) return "text-5xl";
     return "text-4xl";
   };
-
-  const displayInput = formatInputForDisplay(input);
 
   useEffect(() => {
     const el = inputScrollRef.current;
@@ -327,44 +345,63 @@ export default function Home() {
       <div className={clsx("max-w-[348px]")}>
         <div className={clsx("pb-5")}>
           <div className="mb-2 w-full max-w-[348px] text-right">
-            <div
-              ref={inputScrollRef}
-              className={clsx({
-                "scrollbar-none overflow-x-auto": isLongNumber(input || "0"),
-                "overflow-hidden": !isLongNumber(input || "0"),
-              })}
-            >
-              <p
-                ref={inputRef}
-                className={clsx("text-white", {
-                  [getFontSizeClass(input || "0")]: isCalculated !== true,
-                  "text-3xl text-gray-500": isCalculated === true,
-                  "whitespace-nowrap": isLongNumber(input || "0"),
-                })}
-              >
-                {displayInput || "0"}
-              </p>
-            </div>
-            <div
-              className={clsx("w-full max-w-[348px] text-right", {
-                hidden: isCalculated !== true,
-              })}
-            >
+            <div className="relative text-right">
               <div
-                ref={resultScrollRef}
+                ref={inputScrollRef}
                 className={clsx({
-                  "scrollbar-none overflow-x-auto": isLongNumber(result),
-                  "overflow-hidden": !isLongNumber(result),
+                  "scrollbar-none overflow-x-auto": isLongNumber(input || "0"),
+                  "overflow-hidden": !isLongNumber(input || "0"),
                 })}
               >
                 <p
-                  ref={resultRef}
-                  className={clsx(`${getFontSizeClass(result)} text-white`, {
-                    "whitespace-nowrap": isLongNumber(result),
+                  ref={inputRef}
+                  className={clsx("text-white", {
+                    [getFontSizeClass(input || "0")]: isCalculated !== true,
+                    "text-3xl text-gray-500": isCalculated === true,
+                    "whitespace-nowrap": isLongNumber(input || "0"),
                   })}
                 >
-                  {result}
+                  {displayInput || "0"}
                 </p>
+                {showInputLeft && (
+                  <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-gray-800 to-transparent" />
+                )}
+                {showInputRight && (
+                  <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-gray-800 to-transparent" />
+                )}
+              </div>
+              <div
+                className={clsx("w-full max-w-[348px] text-right", {
+                  hidden: isCalculated !== true,
+                })}
+              >
+                <div className="relative">
+                  <div
+                    ref={resultScrollRef}
+                    className={clsx({
+                      "scrollbar-none overflow-x-auto": isLongNumber(result),
+                      "overflow-hidden": !isLongNumber(result),
+                    })}
+                  >
+                    <p
+                      ref={resultRef}
+                      className={clsx(
+                        `${getFontSizeClass(result)} text-white`,
+                        {
+                          "whitespace-nowrap": isLongNumber(result),
+                        },
+                      )}
+                    >
+                      {result}
+                    </p>
+                    {showResultLeft && (
+                      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-gray-800 to-transparent" />
+                    )}
+                    {showResultRight && (
+                      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-gray-800 to-transparent" />
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
