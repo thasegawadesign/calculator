@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import { all, create, MathJsInstance } from "mathjs";
-import { JSX, useState } from "react";
+import { JSX, useEffect, useRef, useState } from "react";
 import { BsPlusSlashMinus } from "react-icons/bs";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -56,6 +56,8 @@ const line5: ButtonLabel[] = [
 export default function Home() {
   const [input, setInput] = useState("");
   const [result, setResult] = useState("");
+  const inputRef = useRef<HTMLParagraphElement>(null);
+  const resultRef = useRef<HTMLParagraphElement>(null);
   const [isCalculated, setIsCalculated] = useState(false);
 
   const math: MathJsInstance = create(all);
@@ -251,6 +253,12 @@ export default function Home() {
 
     return result;
   };
+
+  const isLongNumber = (value: string) => {
+    const digitsOnly = value.replace(/[^0-9]/g, "");
+    return digitsOnly.length > 12;
+  };
+
   const getFontSizeClass = (value: string) => {
     const length = value.replace(/[.-]/g, "").length;
 
@@ -260,27 +268,64 @@ export default function Home() {
     return "text-4xl";
   };
 
+  useEffect(() => {
+    if (inputRef.current && isLongNumber(input)) {
+      inputRef.current.scrollLeft = inputRef.current.scrollWidth;
+    }
+  }, [input]);
+
+  useEffect(() => {
+    if (resultRef.current && isLongNumber(result)) {
+      resultRef.current.scrollLeft = resultRef.current.scrollWidth;
+    }
+  }, [result]);
+
   return (
     <main
       className={clsx("grid h-screen w-full items-end bg-gray-800 px-4 pb-20")}
     >
-      <div className={clsx("max-w-sm")}>
-        <div className={clsx("pb-5 text-right")}>
-          <p
-            className={clsx("text-white", {
-              [getFontSizeClass(input || "0")]: isCalculated !== true,
-              "mb-4 text-3xl text-gray-500": isCalculated === true,
-            })}
-          >
-            {input || "0"}
-          </p>
-          <p
-            className={clsx(`${getFontSizeClass(result)} text-white`, {
-              hidden: isCalculated !== true,
-            })}
-          >
-            {result}
-          </p>
+      <div className={clsx("max-w-[348px]")}>
+        <div className={clsx("pb-5")}>
+          <div className="mb-2 w-full max-w-[348px] text-right">
+            <div
+              className={clsx({
+                "scrollbar-none overflow-x-auto": isLongNumber(input || "0"),
+                "overflow-hidden": !isLongNumber(input || "0"),
+              })}
+            >
+              <p
+                ref={inputRef}
+                className={clsx("text-white", {
+                  [getFontSizeClass(input || "0")]: isCalculated !== true,
+                  "text-3xl text-gray-500": isCalculated === true,
+                  "whitespace-nowrap": isLongNumber(input || "0"),
+                })}
+              >
+                {input || "0"}
+              </p>
+            </div>
+            <div
+              className={clsx("w-full max-w-[348px] text-right", {
+                hidden: isCalculated !== true,
+              })}
+            >
+              <div
+                className={clsx({
+                  "scrollbar-none overflow-x-auto": isLongNumber(result),
+                  "overflow-hidden": !isLongNumber(result),
+                })}
+              >
+                <p
+                  ref={resultRef}
+                  className={clsx(`${getFontSizeClass(result)} text-white`, {
+                    "whitespace-nowrap": isLongNumber(result),
+                  })}
+                >
+                  {result}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
         <div className={clsx("grid grid-cols-4 gap-2")}>
           {line1.map((item) => (
