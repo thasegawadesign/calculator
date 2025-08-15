@@ -65,28 +65,31 @@ export default function Home() {
   };
 
   const handleClick = (item: ButtonLabel) => {
-    switch (item.name) {
-      case "AC":
-        clearInput();
-        setIsCalculated(false);
-        break;
-      case "plusSlashMinus":
-        toggleSign();
-        setIsCalculated(false);
-        break;
-      case "=":
-        calculate();
-        break;
+    if (item.name === "AC") {
+      clearInput();
+      setIsCalculated(false);
+      return;
     }
-    switch (item.type) {
-      case "operand":
-        concatenateNumericLiterals(item.name);
-        break;
+
+    if (item.name === "plusSlashMinus") {
+      toggleSign();
+      setIsCalculated(false);
+      return;
     }
-    switch (item.type) {
-      case "operator":
-        concatenateOperator(item.content);
-        break;
+
+    if (item.name === "=") {
+      calculate();
+      return;
+    }
+
+    if (item.type === "operand") {
+      concatenateNumericLiterals(item.name);
+      return;
+    }
+
+    if (item.type === "operator") {
+      concatenateOperator(item.content);
+      return;
     }
   };
 
@@ -112,8 +115,8 @@ export default function Home() {
 
     try {
       const rawResult = math.evaluate(replaceMathSymbols(trimmedInput));
-      const roundedResult = Math.round(rawResult * 1e12) / 1e12;
-      setResult(roundedResult.toString());
+      const formattedResult = formatResult(rawResult);
+      setResult(formattedResult);
       setIsCalculated(true);
       return;
     } catch (error) {
@@ -141,9 +144,16 @@ export default function Home() {
   };
 
   const getCurrentNumber = (expression: string) => {
-    const operators = /([+\-×÷%])/;
-    const parts = expression.split(operators);
-    return parts[parts.length - 1] || "";
+    const patterns = [/\([^)]*\)$/, /[+\-×÷%]([^+\-×÷%]*)$/, /^([^+\-×÷%]*)$/];
+
+    for (const pattern of patterns) {
+      const match = expression.match(pattern);
+      if (match) {
+        return match[1] || match[0];
+      }
+    }
+
+    return "";
   };
 
   const getExpressionWithoutLastNumber = (expression: string) => {
@@ -156,12 +166,12 @@ export default function Home() {
     if (input.length === 0 && value === "0") return;
 
     const currentNumber = getCurrentNumber(input);
+
     if (currentNumber.includes(".") && value === ".") return;
 
     if (input.length === 0 && value === ".") {
       value = "0.";
     }
-
     if (value === "." && /[+\-×÷%]$/.test(input)) {
       value = "0.";
     }
@@ -173,22 +183,39 @@ export default function Home() {
     if (value === "AC") return;
     if (value === "=") return;
     if (typeof value === "object") return;
-
     if (input === "" && value !== "-") return;
-
     if (input.endsWith("+") && value === "+") return;
+    if (input.endsWith("-") && value === "-") return;
     if (input.endsWith("×") && value === "×") return;
     if (input.endsWith("÷") && value === "÷") return;
     if (input.endsWith("%") && value === "%") return;
-
-    if (value === "-") {
-      if (input.endsWith("-")) return;
-    }
 
     setIsCalculated(false);
     setInput((prev) => prev + value);
   };
 
+  const formatResult = (num: number) => {
+    const str = num.toString();
+
+    if (Number.isInteger(num)) {
+      return str;
+    }
+
+    const precision = 12;
+    let result = num.toPrecision(precision);
+
+    if (result.includes("e")) {
+      if (Math.abs(num) < 1) {
+        result = num.toFixed(12);
+      } else {
+        result = num.toString();
+      }
+    }
+
+    result = result.replace(/\.?0+$/, "");
+
+    return result;
+  };
   const getFontSizeClass = (value: string) => {
     const length = value.replace(/[.-]/g, "").length;
 
