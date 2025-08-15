@@ -193,9 +193,9 @@ export default function Home() {
     const length = value.replace(/[.-]/g, "").length;
 
     if (length <= 6) return "text-7xl";
-    if (length <= 9) return "text-5xl";
-    if (length <= 12) return "text-4xl";
-    return "text-3xl";
+    if (length <= 9) return "text-6xl";
+    if (length <= 12) return "text-5xl";
+    return "text-4xl";
   };
 
   return (
