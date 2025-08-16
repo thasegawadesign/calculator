@@ -411,9 +411,14 @@ export default function Home() {
             <button
               key={item.name}
               className={clsx(
-                "grid aspect-square h-full place-items-center rounded-full text-4xl text-white",
-                { "bg-gray-500 active:bg-gray-400": item.name !== "/" },
-                { "bg-orange-400 active:bg-orange-300": item.name === "/" },
+                "grid aspect-square h-full place-items-center rounded-full text-white",
+                {
+                  "bg-gray-500 text-4xl active:bg-gray-400": item.name !== "/",
+                },
+                {
+                  "bg-orange-400 text-5xl active:bg-orange-300":
+                    item.name === "/",
+                },
               )}
               onClick={() => handleClick(item)}
             >
@@ -424,9 +429,14 @@ export default function Home() {
             <button
               key={item.name}
               className={clsx(
-                "grid aspect-square h-full place-items-center rounded-full text-4xl text-white",
-                { "bg-gray-700 active:bg-gray-600": item.name !== "*" },
-                { "bg-orange-400 active:bg-orange-300": item.name === "*" },
+                "grid aspect-square h-full place-items-center rounded-full text-white",
+                {
+                  "bg-gray-700 text-4xl active:bg-gray-600": item.name !== "*",
+                },
+                {
+                  "bg-orange-400 text-5xl active:bg-orange-300":
+                    item.name === "*",
+                },
               )}
               onClick={() => handleClick(item)}
             >
@@ -437,9 +447,14 @@ export default function Home() {
             <button
               key={item.name}
               className={clsx(
-                "grid aspect-square h-full place-items-center rounded-full text-4xl text-white",
-                { "bg-gray-700 active:bg-gray-600": item.name !== "-" },
-                { "bg-orange-400 active:bg-orange-300": item.name === "-" },
+                "grid aspect-square h-full place-items-center rounded-full text-white",
+                {
+                  "bg-gray-700 text-4xl active:bg-gray-600": item.name !== "-",
+                },
+                {
+                  "bg-orange-400 text-5xl active:bg-orange-300":
+                    item.name === "-",
+                },
               )}
               onClick={() => handleClick(item)}
             >
@@ -450,9 +465,14 @@ export default function Home() {
             <button
               key={item.name}
               className={clsx(
-                "grid aspect-square h-full place-items-center rounded-full text-4xl text-white",
-                { "bg-gray-700 active:bg-gray-600": item.name !== "+" },
-                { "bg-orange-400 active:bg-orange-300": item.name === "+" },
+                "grid aspect-square h-full place-items-center rounded-full text-white",
+                {
+                  "bg-gray-700 text-4xl active:bg-gray-600": item.name !== "+",
+                },
+                {
+                  "bg-orange-400 text-5xl active:bg-orange-300":
+                    item.name === "+",
+                },
               )}
               onClick={() => handleClick(item)}
             >
@@ -463,13 +483,18 @@ export default function Home() {
             <button
               key={item.name}
               className={clsx(
-                "grid h-full place-items-center rounded-full text-4xl text-white",
+                "grid h-full place-items-center rounded-full text-white",
                 {
                   "aspect-square": item.name !== "0",
                   "col-start-1 col-end-3 aspect-[2/1]": item.name === "0",
                 },
-                { "bg-gray-700 active:bg-gray-600": item.name !== "=" },
-                { "bg-orange-400 active:bg-orange-300": item.name === "=" },
+                {
+                  "bg-gray-700 text-4xl active:bg-gray-600": item.name !== "=",
+                },
+                {
+                  "bg-orange-400 text-5xl active:bg-orange-300":
+                    item.name === "=",
+                },
               )}
               onClick={() => handleClick(item)}
             >
