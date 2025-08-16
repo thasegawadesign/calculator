@@ -303,8 +303,8 @@ export default function Home() {
     const length = value.replace(/[.-]/g, "").length;
 
     if (length <= 6) return "text-7xl";
-    if (length <= 9) return "text-6xl";
-    if (length <= 12) return "text-5xl";
+    if (length <= 9) return "text-5xl";
+    if (length <= 12) return "text-4xl";
     return "text-4xl";
   };
 
@@ -349,7 +349,7 @@ export default function Home() {
               <div
                 ref={inputScrollRef}
                 className={clsx({
-                  "scrollbar-none overflow-x-auto": isLongNumber(input || "0"),
+                  "overflow-x-auto scrollbar-none": isLongNumber(input || "0"),
                   "overflow-hidden": !isLongNumber(input || "0"),
                 })}
               >
@@ -379,7 +379,7 @@ export default function Home() {
                   <div
                     ref={resultScrollRef}
                     className={clsx({
-                      "scrollbar-none overflow-x-auto": isLongNumber(result),
+                      "overflow-x-auto scrollbar-none": isLongNumber(result),
                       "overflow-hidden": !isLongNumber(result),
                     })}
                   >
