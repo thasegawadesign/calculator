@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <body className={inter.className}>{children}</body>
+      <body className={`${inter.className} bg-black`}>{children}</body>
       {isProduction && <GoogleAnalytics gaId="G-GMRX0Y7G20" />}
     </html>
   );
