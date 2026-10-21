@@ -364,10 +364,10 @@ export default function Home() {
                   {displayInput || "0"}
                 </p>
                 {showInputLeft && (
-                  <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-gray-800 to-transparent" />
+                  <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-linear-to-r from-gray-800 to-transparent" />
                 )}
                 {showInputRight && (
-                  <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-gray-800 to-transparent" />
+                  <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-linear-to-l from-gray-800 to-transparent" />
                 )}
               </div>
               <div
@@ -395,10 +395,10 @@ export default function Home() {
                       {result}
                     </p>
                     {showResultLeft && (
-                      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-gray-800 to-transparent" />
+                      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-linear-to-r from-gray-800 to-transparent" />
                     )}
                     {showResultRight && (
-                      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-gray-800 to-transparent" />
+                      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-linear-to-l from-gray-800 to-transparent" />
                     )}
                   </div>
                 </div>
@@ -486,7 +486,7 @@ export default function Home() {
                 "grid h-full place-items-center rounded-full text-white",
                 {
                   "aspect-square": item.name !== "0",
-                  "col-start-1 col-end-3 aspect-[2/1]": item.name === "0",
+                  "col-start-1 col-end-3 aspect-2/1": item.name === "0",
                 },
                 {
                   "bg-gray-700 text-4xl active:bg-gray-600": item.name !== "=",
