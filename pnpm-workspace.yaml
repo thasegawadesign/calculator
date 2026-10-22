@@ -1,4 +1,2 @@
 allowBuilds:
   unrs-resolver: false
-ignoredBuiltDependencies:
-  - unrs-resolver
